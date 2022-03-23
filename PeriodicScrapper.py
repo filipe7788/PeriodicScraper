@@ -1,4 +1,5 @@
 import scrapy
+from inline_requests import inline_requests
 
 class PeriodicScrapper(scrapy.Spider):
     name = 'PeriodicScrapper'
@@ -21,6 +22,7 @@ class PeriodicScrapper(scrapy.Spider):
         for next_page in response.css('a.next'):
             yield response.follow(next_page, self.parse)
 
+    @inline_requests
     def parse_Periodico(self, response):
         coverImage = response.css('div.heading a.cover img::attr(src)').get()
 
@@ -30,24 +32,19 @@ class PeriodicScrapper(scrapy.Spider):
         year = titleText[12:16]
         volumeURL = response.meta['volumeURL']
 
+        pdfs = []
+
+        for section in response.css("ul.cmp_article_list h3 a::attr(href)").extract():
+            item = section.strip()
+            result = yield scrapy.Request(item)
+            pdfs.append(result.css("h1.page_title::text").get().strip())
+            
         fatherData = {
             "volumeAndNumber": volumeAndNumber,
             "coverImageUrl": coverImage,
             "year": year,
-            "volumeURL": volumeURL
+            "volumeURL": volumeURL,
+            "documents": pdfs
         }
         
-
-        for section in response.css("ul.cmp_article_list h3 a::attr(href)").extract():
-            item = section.strip()
-            yield scrapy.Request(
-                item,
-                callback=self.parse_Documentos,
-                meta={"item": fatherData}
-            )
-
-        
-    def parse_Documentos(self, response):
-        pdfs = response.css("h1.page_title::text").get().strip()
-        data = response.meta["item"]
-        yield {'pdfs': pdfs, "data": data}
+        yield {fatherData}
