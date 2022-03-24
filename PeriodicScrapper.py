@@ -24,12 +24,12 @@ class PeriodicScrapper(scrapy.Spider):
 
     @inline_requests
     def parse_Periodico(self, response):
-        coverImage = response.css('div.heading a.cover img::attr(src)').get()
+        coverImage = response.css('div.heading a.cover img::attr(src)').get('')
 
-        titleText = response.css('h1::text').get().strip()
+        titleText = response.css('h1::text').get('').strip()
     
-        volumeAndNumber = titleText[0:11]
-        year = titleText[12:16]
+        volumeAndNumber = titleText[0:10]
+        year = response.css('div.published span.value::text').get('').strip()[0:4]
         volumeURL = response.meta['volumeURL']
 
         pdfs = []
@@ -37,14 +37,39 @@ class PeriodicScrapper(scrapy.Spider):
         for section in response.css("ul.cmp_article_list h3 a::attr(href)").extract():
             item = section.strip()
             result = yield scrapy.Request(item)
-            pdfs.append(result.css("h1.page_title::text").get().strip())
             
-        fatherData = {
+            # Pagina do artigo 
+            title = result.css("h1.page_title::text").get('').strip()
+            keywords = result.css('.obj_article_details .item.keywords span::text').get('')
+            strippedKeywords = ''.join(c for c in keywords if c not in '\r\t\n')
+            # Página do periódico
+            category = response.css('div.section h2::text').get('').strip()
+            
+            # Pagina do artigo 
+            pdfLink = result.css('ul.value.galleys_links li a::attr(href)').get('')
+            doiLink = result.css('.item.doi a::attr(href)').get('')
+
+            # Pagina do artigo 
+            rawAuthors = result.css('ul.authors span.name::text').extract()
+            strippedAuthors = []
+            for item in rawAuthors:
+                strippedAuthors.append(''.join(c for c in item if c not in '\r\t\n'))
+
+            pdfs.append(
+                {
+                    "title": title,
+                    "keywords": strippedKeywords.split(','),
+                    "category": category,
+                    "pdfLink": pdfLink,
+                    "doiLink": doiLink,
+                    "authors": strippedAuthors
+                }
+            )
+            
+        yield {
+            "year": year,
             "volumeAndNumber": volumeAndNumber,
             "coverImageUrl": coverImage,
-            "year": year,
             "volumeURL": volumeURL,
             "documents": pdfs
         }
-        
-        yield {fatherData}
