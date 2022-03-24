@@ -1,5 +1,6 @@
 import scrapy
 from inline_requests import inline_requests
+import pandas as pd
 
 class PeriodicScrapper(scrapy.Spider):
     name = 'PeriodicScrapper'
@@ -57,19 +58,19 @@ class PeriodicScrapper(scrapy.Spider):
 
             pdfs.append(
                 {
-                    "title": title,
-                    "keywords": strippedKeywords.split(','),
-                    "category": category,
-                    "pdfLink": pdfLink,
-                    "doiLink": doiLink,
-                    "authors": strippedAuthors
+                    "Titulo": title,
+                    "Palavras-Chave": strippedKeywords.split(','),
+                    "Categoria": category,
+                    "Link PDF": pdfLink,
+                    "Link DOI": doiLink,
+                    "Autores": strippedAuthors
                 }
             )
             
         yield {
-            "year": year,
-            "volumeAndNumber": volumeAndNumber,
-            "coverImageUrl": coverImage,
-            "volumeURL": volumeURL,
-            "documents": pdfs
+            "Ano": year,
+            "Volume e número": volumeAndNumber,
+            "URL da Capa": coverImage,
+            "URL do volume": volumeURL,
+            "Artigos": pdfs
         }
