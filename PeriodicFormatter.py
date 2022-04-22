@@ -2,7 +2,6 @@ import pandas as pd
 import xlsxwriter
 
 df = pd.read_json ('items.json') # ler arquivo JSON com os dados
-normalDF = df.iloc[:, [0,1,2,3]] # normalDF é o dataframe com as colunas referentes ao nome do periódico, volume, número e capa
 artigos = df.iloc[:,4] # artigos é o dataframe com as colunas referentes aos artigos de cada periodico ligados pelo volume e número 
 
 flat_list = [item for sublist in artigos for item in sublist] # flat_list é a lista com todos os artigos de todos os periódicos

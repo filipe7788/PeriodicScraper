@@ -1,9 +1,8 @@
 import scrapy
 from inline_requests import inline_requests
-import pandas as pd
 
-class PeriodicScrapper(scrapy.Spider):
-    name = 'PeriodicScrapper'
+class PeriodicScraper(scrapy.Spider):
+    name = 'PeriodicScraper'
     start_urls = [
         'https://periodicos.ufba.br/index.php/revistaici/issue/archive', 
         'https://periodicos.ufba.br/index.php/revistaici/issue/archive/2'
