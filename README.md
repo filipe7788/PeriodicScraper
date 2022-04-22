@@ -10,11 +10,11 @@
 
 ### Scraper de dados
 
-    Nessa etapa usa-se a linguagem [python](https://www.python.org/downloads/release/python-390/) 
+    Nessa etapa usa-se a linguagem python
     em sua versão 3.7 como base. 
 
-    Também são utilizadas as dependencias [scrapy](https://scrapy.org/) 
-    e [scrapy inline_requests](https://github.com/rmax/scrapy-inline-requests) instaladas via pip.
+    Também são utilizadas as dependencias scrapy
+    e scrapy inline_requests instaladas via pip.
 
 ### Gerador de excel
 
