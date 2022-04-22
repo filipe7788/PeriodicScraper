@@ -55,15 +55,22 @@ class PeriodicScrapper(scrapy.Spider):
             strippedAuthors = []
             for item in rawAuthors:
                 strippedAuthors.append(''.join(c for c in item if c not in '\r\t\n'))
+            autores = ', '.join(strippedAuthors)
+
+            list_palavras_chave = strippedKeywords.split(',')
+            keywords = {}
+            for (index, item) in enumerate(list_palavras_chave):
+                keywords['palavra chave ' + str(index + 1)] = item.strip()
 
             pdfs.append(
                 {
+                    "Edição": volumeAndNumber,
                     "Titulo": title,
-                    "Palavras-Chave": strippedKeywords.split(','),
+                    "Palavras-Chave": keywords,
                     "Categoria": category,
                     "Link PDF": pdfLink,
                     "Link DOI": doiLink,
-                    "Autores": strippedAuthors
+                    "Autores": autores
                 }
             )
             
